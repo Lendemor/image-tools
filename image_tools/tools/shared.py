@@ -19,8 +19,10 @@ class ToolState(rx.State):
 class TabState(rx.State):
     active_tab: str = "crop"
 
-    def set_active_tab(self, value: str):
+    async def set_active_tab(self, value: str):
         self.active_tab = value
+        active = await self.get_state(TABS_MAP[self.active_tab])
+        await active.post_upload(refresh=True)
 
     async def get_active_state(self):
         return TABS_MAP[self.active_tab]
@@ -79,7 +81,7 @@ def original_preview():
 
     return rx.vstack(
         rx.heading("Original"),
-        # rx.spacer(),
+        rx.spacer(),
         rx.cond(
             UploadState.original,
             rx.image(src=UploadState.original, width="300px"),
@@ -89,14 +91,11 @@ def original_preview():
                     progress_bar(),
                     rx.text("No image uploaded"),
                 ),
-                height="400px",
             ),
         ),
         rx.spacer(),
         upload_button(),
         align="center",
-        justify="center",
-        min_height="400px",
     )
 
 
@@ -124,16 +123,20 @@ def grid_item(*content):
 def tool_grid(title, subtitle, tool_content, preview_extra=None):
     res_img = result_image()
 
-    return rx.vstack(
-        rx.heading(title, size="7"),
-        subtitle,
-        rx.grid(
-            grid_item(original_preview()),
-            grid_item(rx.center(tool_content, height="100%")),
-            grid_item(preview_extra) if preview_extra else rx.fragment(),
-            grid_item(res_img),
-            columns="4" if preview_extra else "3",
-            spacing="4",
+    return rx.container(
+        rx.vstack(
+            rx.heading(title, size="7"),
+            subtitle,
+            rx.grid(
+                grid_item(original_preview()),
+                grid_item(rx.center(tool_content, height="100%")),
+                grid_item(preview_extra) if preview_extra else rx.fragment(),
+                grid_item(res_img),
+                columns="4" if preview_extra else "3",
+                spacing="4",
+                min_height="70vh",
+            ),
+            align="center",
         ),
-        align="center",
+        size="4",
     )
