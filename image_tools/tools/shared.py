@@ -96,6 +96,7 @@ def original_preview():
         rx.spacer(),
         upload_button(),
         align="center",
+        min_height="50vh",
     )
 
 
@@ -134,7 +135,6 @@ def tool_grid(title, subtitle, tool_content, preview_extra=None):
                 grid_item(res_img),
                 columns="4" if preview_extra else "3",
                 spacing="4",
-                min_height="70vh",
             ),
             align="center",
         ),
