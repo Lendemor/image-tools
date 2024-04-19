@@ -66,28 +66,7 @@ def index() -> rx.Component:
     )
 
 
-app = rx.App(theme=rx.theme(appearance="dark"), overlay_component=None)
+app = rx.App(
+    theme=rx.theme(appearance="dark", accent_color="jade"), overlay_component=None
+)
 app.add_page(index)
-
-
-@rx.page(route="/styling_test", title="Styling Test", description="Test of the styling")
-def index() -> rx.Component:
-    return rx.container(
-        rx.heading("Styling Test", size="5"),
-        rx.box(
-            rx.hstack(
-                rx.text("This is a test of the styling"),
-                rx.text("This is a test of the styling", color="green"),
-            ),
-            border="1px solid red",
-            color="orange",
-        ),
-        rx.box(
-            rx.hstack(
-                rx.button("button 1"),
-                rx.button("button 2", color="green"),
-            ),
-            border="1px solid yellow",
-            color="orange",
-        ),
-    )

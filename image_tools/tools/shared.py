@@ -42,6 +42,12 @@ class UploadState(rx.State):
         tabs = await self.get_state(TabState)
         yield (await tabs.get_active_state()).post_upload
 
+    async def swap_result(self):
+        self.original = self.result
+        self.result = None
+        tabs = await self.get_state(TabState)
+        yield (await tabs.get_active_state()).post_upload
+
     async def handle_upload_progress(self, progress: dict):
         self.uploading, self.upload_progress = True, round(progress["progress"] * 100)
 
@@ -97,7 +103,10 @@ def result_image():
         rx.spacer(),
         rx.image(src=UploadState.result, width="300px"),
         rx.spacer(),
-        rx.cond(UploadState.result, rx.button("Use this result as source.")),
+        rx.cond(
+            UploadState.result,
+            rx.button("Use this result as source.", on_click=UploadState.swap_result),
+        ),
         align="center",
     )
 

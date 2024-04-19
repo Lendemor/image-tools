@@ -10,21 +10,15 @@ class CropState(ToolState):
     crop_y: int = 0
     crop_width: int = 0
     crop_height: int = 0
-    str_crop_x: str = "0"
-    str_crop_y: str = "0"
-    str_crop_width: str = "0"
-    str_crop_height: str = "0"
     original_w: int = 0
     original_h: int = 0
 
     async def post_upload(self, refresh=True):
         original = await self.check_original()
         if refresh and self.has_image:
+            self.crop_x, self.crop_y = 0, 0
             self.crop_width, self.crop_height = self.original_w, self.original_h = (
                 original.size
-            )
-            self.str_crop_width, self.str_crop_height = str(self.crop_width), str(
-                self.crop_height
             )
 
     @rx.var
@@ -35,6 +29,22 @@ class CropState(ToolState):
     def y2(self) -> int:
         return self.crop_y + self.crop_height
 
+    @rx.var
+    def str_crop_x(self) -> str:
+        return str(self.crop_x)
+
+    @rx.var
+    def str_crop_y(self) -> str:
+        return str(self.crop_y)
+
+    @rx.var
+    def str_crop_width(self) -> str:
+        return str(self.crop_width)
+
+    @rx.var
+    def str_crop_height(self) -> str:
+        return str(self.crop_height)
+
     def set_cropper(self, value, label):
         try:
             value = int(value)
@@ -43,25 +53,16 @@ class CropState(ToolState):
 
         if label == "x":
             self.crop_x = value
-            self.str_crop_x = str(value)
             if self.crop_x + self.crop_width > self.original_w:
                 self.crop_width = self.original_w - self.crop_x
-                self.str_crop_width = str(self.crop_width)
         elif label == "y":
             self.crop_y = value
-            self.str_crop_y = str(value)
             if self.crop_y + self.crop_height > self.original_h:
                 self.crop_height = self.original_h - self.crop_y
-                self.str_crop_height = str(self.crop_height)
         elif label == "Width":
             self.crop_width = value
-            self.str_crop_width = str(value)
-            if self.crop_x + self.crop_width > self.original_w:
-                self.crop_x = self.original_w - self.crop_width
-                self.str_crop_x = str(self.crop_x)
         else:
             self.crop_height = value
-            self.str_crop_height = str(value)
 
     async def trigger_crop(self):
         upload: UploadState = await self.get_state(UploadState)
