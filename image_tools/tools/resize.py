@@ -17,10 +17,11 @@ class ResizeState(ToolState):
     def rounded_ratio(self) -> str:
         return round(self.og_ratio, 2)
 
-    async def post_upload(self):
+    async def post_upload(self, refresh=True):
         original = await self.check_original()
-        self.og_width, self.og_height = original.size
-        self.og_ratio = self.og_width / self.og_height
+        if refresh and self.has_image:
+            self.og_width, self.og_height = original.size
+            self.og_ratio = self.og_width / self.og_height
 
     def update_new_size(self, value, label):
         try:

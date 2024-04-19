@@ -9,7 +9,7 @@ class FlipState(ToolState):
     horizontal: bool = False
     vertical: bool = False
 
-    async def post_upload(self):
+    async def post_upload(self, refresh=True):
         await self.check_original()
 
     async def trigger_flip(self):

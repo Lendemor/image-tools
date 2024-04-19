@@ -21,6 +21,18 @@ TOOLS_MAP = {
     "crop": crop_tool,
 }
 
+color_button_style = {
+    "position": "fixed",
+    "right": "2em",
+    "top": "2em",
+    "background": "transparent",
+    "color": rx.color("gray", 12),
+}
+
+
+def toggle_color_button():
+    return rx.color_mode.button(rx.color_mode.icon(), style=color_button_style)
+
 
 def tools():
     return rx.tabs.root(
@@ -39,6 +51,7 @@ def tools():
 
 def index() -> rx.Component:
     return rx.center(
+        toggle_color_button(),
         rx.vstack(
             rx.heading("Image Tools", size="8"),
             rx.text(

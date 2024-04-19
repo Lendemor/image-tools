@@ -22,7 +22,7 @@ class TabState(rx.State):
     async def set_active_tab(self, value: str):
         self.active_tab = value
         active = await self.get_state(TABS_MAP[self.active_tab])
-        await active.post_upload(refresh=True)
+        await active.post_upload(refresh=False)
 
     async def get_active_state(self):
         return TABS_MAP[self.active_tab]
@@ -53,26 +53,19 @@ class UploadState(rx.State):
 def original_preview():
     def upload_button():
         return rx.upload(
-            rx.button(
-                rx.icon("upload"),
-                "Upload Image",
-            ),
+            rx.button(rx.icon("upload"), "Upload Image"),
+            id="upload",
             on_drop=UploadState.handle_upload(
                 rx.upload_files(
                     upload_id="upload",
                     on_upload_progress=UploadState.handle_upload_progress,
                 )
             ),
-            id="upload",
         )
 
     def progress_bar():
         return rx.hstack(
-            rx.progress(
-                value=UploadState.upload_progress,
-                max=100,
-                width="300px",
-            ),
+            rx.progress(value=UploadState.upload_progress, max=100, width="300px"),
             rx.icon_button(
                 "X", on_click=UploadState.cancel_upload, color_scheme="crimson"
             ),
@@ -87,9 +80,7 @@ def original_preview():
             rx.image(src=UploadState.original, width="300px"),
             rx.center(
                 rx.cond(
-                    UploadState.uploading,
-                    progress_bar(),
-                    rx.text("No image uploaded"),
+                    UploadState.uploading, progress_bar(), rx.text("No image uploaded")
                 ),
             ),
         ),

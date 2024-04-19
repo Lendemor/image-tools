@@ -17,14 +17,15 @@ class CropState(ToolState):
     original_w: int = 0
     original_h: int = 0
 
-    async def post_upload(self):
+    async def post_upload(self, refresh=True):
         original = await self.check_original()
-        self.crop_width, self.crop_height = self.original_w, self.original_h = (
-            original.size
-        )
-        self.str_crop_width, self.str_crop_height = str(self.crop_width), str(
-            self.crop_height
-        )
+        if refresh and self.has_image:
+            self.crop_width, self.crop_height = self.original_w, self.original_h = (
+                original.size
+            )
+            self.str_crop_width, self.str_crop_height = str(self.crop_width), str(
+                self.crop_height
+            )
 
     @rx.var
     def x2(self) -> int:
@@ -55,6 +56,9 @@ class CropState(ToolState):
         elif label == "Width":
             self.crop_width = value
             self.str_crop_width = str(value)
+            if self.crop_x + self.crop_width > self.original_w:
+                self.crop_x = self.original_w - self.crop_width
+                self.str_crop_x = str(self.crop_x)
         else:
             self.crop_height = value
             self.str_crop_height = str(value)
@@ -75,7 +79,6 @@ TABS_MAP["crop"] = CropState
 
 
 def area_preview():
-
     scale = CropState.original_w / 300
     return (
         rx.heading("Preview"),
@@ -95,6 +98,7 @@ def area_preview():
                 rx.text(CropState.has_image),
             ),
             position="relative",
+            width="auto",
         ),
     )
 
@@ -113,7 +117,7 @@ def cropper_form():
         )
 
     return rx.vstack(
-        area_preview(),
+        *area_preview(),
         rx.grid(
             rx.vstack(
                 _input("x", CropState.str_crop_x),

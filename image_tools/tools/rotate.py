@@ -8,7 +8,7 @@ class RotateState(ToolState):
     angle: str = "0"
     expand: bool = True
 
-    async def post_upload(self):
+    async def post_upload(self, refresh=True):
         await self.check_original()
 
     async def trigger_rotate(self):
